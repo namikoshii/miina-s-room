@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // --- A. ESCENA ---
 const scene = new THREE.Scene();
@@ -30,20 +30,21 @@ dirLight.position.set(5, 10, 5);
 scene.add(dirLight);
 
 // --- E. OBJETO 3D ---
-let objects = []; 
-const loader = new OBJLoader();
+let objects = [];
+const loader = new GLTFLoader();
 
 loader.load(
-    './models/Room.obj',
-    (obj1) => {
+    './models/Room.glb',
+    (gltf) => {
+        const obj1 = gltf.scene;
         obj1.position.set(0, 0, 0);
         obj1.scale.set(1, 1, 1);
-        obj1.name = "Dell Monitor mesh"; // nombre del objeto que quieres clickar
+        obj1.name = "Dell Monitor mesh";
         scene.add(obj1);
         objects.push(obj1);
     },
     undefined,
-    (error) => console.error('Error cargando OBJ', error)
+    (error) => console.error('Error cargando GLB', error)
 );
 
 // --- F. CONTROLES ---
@@ -60,10 +61,10 @@ const mouse = new THREE.Vector2();
 let targetPosition = null;
 let targetLookAt = null;
 const camSpeed = 0.05;
-let cameraLocked = false; // bandera para bloquear controles
+let cameraLocked = false;
 
 window.addEventListener('click', (event) => {
-    if (cameraLocked) return; // si ya está bloqueada, no hacemos nada
+    if (cameraLocked) return;
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -95,19 +96,14 @@ window.addEventListener('click', (event) => {
 function animate() {
     requestAnimationFrame(animate);
 
-    // Rotación opcional del objeto
-
-
-    // Movimiento de cámara hacia el objetivo
     if (targetPosition && targetLookAt) {
         camera.position.lerp(targetPosition, camSpeed);
         camera.lookAt(targetLookAt);
 
-        // Si estamos muy cerca del objetivo, bloqueamos la cámara
         if (camera.position.distanceTo(targetPosition) < 0.01) {
             camera.position.copy(targetPosition);
             camera.lookAt(targetLookAt);
-            controls.enabled = false; // 🔒 bloqueamos controles
+            controls.enabled = false;
             cameraLocked = true;
         }
     }
