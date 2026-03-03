@@ -50,8 +50,7 @@ loader.load(
 // --- F. CONTROLES ---
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.minPolarAngle = Math.PI / 3;
-controls.maxPolarAngle = Math.PI / 3;
+controls.enableRotate = false; // 🔒 desactiva la rotación
 controls.minDistance = 3;
 controls.maxDistance = 15;
 
